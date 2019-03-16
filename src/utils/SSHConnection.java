@@ -38,6 +38,8 @@ public class SSHConnection {
         	mSSHChannel.setInputStream(System.in);
             this.outputStream = mSSHChannel.getOutputStream();
             success = true;
+			System.out.println(">>>");
+
         } catch (Exception e) {
         	e.printStackTrace();
         }
@@ -76,6 +78,8 @@ public class SSHConnection {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 		}
+		System.out.println(input);
+
 		return input;
 	}
 	

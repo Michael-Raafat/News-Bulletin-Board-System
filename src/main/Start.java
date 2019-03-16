@@ -3,9 +3,11 @@ package main;
 import java.util.List;
 
 import utils.FReader;
+import utils.SSHConnection;
 
 public class Start {
 	private static final int securePort = 22;
+	
 	private static String serverAdd;
 	private static int serverPort;
 	private static int numberOfReaders;
@@ -61,8 +63,72 @@ public class Start {
 			}
 		}
 	}
-	
-	public static void createServer(){}
-	public static void createClient(){}
+	@SuppressWarnings(value = { "Untested" })
+	public static void createServer(){
+		// calling server.java to create server and listen to server socket
+		SSHConnection con = new SSHConnection();
+		if (con.openConnection(serverAdd, securePort, "serverName", "pass", 120000)) {
+            try {
+                con.sendCommand("cd .//server; \n");
+                Thread.sleep(300);
+                //compile
+                con.sendCommand("javac Server.java \n");
+                Thread.sleep(300);
+
+                int Requests = (readersIDs.length + writersIDs.length) * numberOfAccess;
+                //run and send args
+                //Args to be discussed
+                con.sendCommand("java Server " + serverPort + " " + Requests + " \n");
+                Thread.sleep(300);
+
+                con.closeConnection();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Error");
+        }
+	}
+	@SuppressWarnings(value = { "Untested" })
+	public static void createClient(){
+		// calling client.java to create readers and writers
+		SSHConnection con = new SSHConnection();
+		 try {
+			 con.sendCommand("cd .//client; \n");
+             Thread.sleep(300);
+	            for (int i = 0; i < readersIDs.length; i++) {
+	            													//replace userName and pass
+	                if (con.openConnection(readersAdd[i], securePort, "ClientName", "pass", 120000)) {
+	                    Thread.sleep(300);
+
+	                    con.sendCommand("javac Client.java \n");
+	                    Thread.sleep(300);
+
+	                    con.sendCommand("java Client " + serverAdd + " " + serverPort + " READER " + readersIDs[i] + " "
+	                            + numberOfAccess + " " + readersIDs.length + "\n");
+	                    Thread.sleep(300);
+
+	                }
+	            }
+
+	            for (int i = 0; i < writersIDs.length; i++) {
+	            													//replace userName and pass
+	                if (con.openConnection(writersAdd[i], securePort, "ClientName", "pass", 120000)) {
+	                    Thread.sleep(300);
+
+	                    con.sendCommand("javac Client.java \n");
+	                    Thread.sleep(300);
+	                    //Args to be discussed
+	                    con.sendCommand("java Client " + serverAdd + " " + serverPort + " WRITER " + writersIDs[i] + " "
+	                            + numberOfAccess + " " + writersIDs.length + "\n");
+	                    Thread.sleep(300);
+
+	                }
+	            }
+	             con.closeConnection();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	}
 		
 }
