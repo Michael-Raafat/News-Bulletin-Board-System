@@ -48,7 +48,7 @@ package server;
 	            }
 	        }
 
-	        /* Make sure the main thread closes the last thread */
+	        // Make sure the main thread closes the last thread 
 	        while (Thread.activeCount() > 1) {
 	            try {
 	                Thread.sleep(100);
@@ -71,7 +71,7 @@ package server;
 	            e.printStackTrace();
 	        }
 
-	        /* Print readers records */
+	        // Print readers records 
 	        writer.println("Readers:");
 	        writer.println("--------");
 
@@ -92,13 +92,13 @@ package server;
 
 	        writer.println();
 
-	        /* Print writers records */
+	        // Print writers records 
 	        writer.println("Writers:");
 	        writer.println("--------");
 
 	        
 	        writer.println("sSeq---oVal---wID");
-
+	        // not sure of format of files :(
 	        for (int i = 0; i < writersLog.size(); i++) {
 	            recordBody = new StringBuilder();
 	            for (int token : writersLog.get(i)) {
@@ -108,7 +108,7 @@ package server;
 	            recordBody.deleteCharAt(recordBody.length() - 1);
 	            writer.println(new String(recordBody));
 	        }
-	        /* Close writer */
+	        // Close writer 
 	        writer.close();
 	    }
 	}
@@ -141,39 +141,40 @@ package server;
 	            String type = request.split(" ")[0];
 	            int id = Integer.parseInt(request.split(" ")[1]);
 
-	            /* A reader has entered the system, increase the rNum */
+	            // A reader has entered the system, increase the rNum 
 	            if (type.equals("READER")) {
 	                Server.R_NUM++;
 	            }
 
-	            /* Sleep to give the illusion of a real system */
+	            // Sleep to give the illusion of a real system 
 	            int randomTime = rand.nextInt(10000);
 	            System.out.println(randomTime);
 	            Thread.sleep(randomTime);
 
-	            /* Operate if writer */
+	            // Operate if writer 
 	            if (type.equals("WRITER")) {
 	                Server.O_VAL = id;
 	            }
 
-	            /* When thread is about to finish */
+	            // When thread is about to finish 
 	            Server.S_SEQ++;
-	            String response = buildResponse(type, this.rSeq, Server.S_SEQ, Server.O_VAL);
-
-	            /* Write this thread record in its list */
+	            String response = (type.equals("WRITER") ? 
+	            		this.rSeq+" "+Server.S_SEQ : this.rSeq+" "+Server.S_SEQ + " " + String.valueOf(Server.O_VAL));
+		        
+	            // Write this thread record in its list 
 	            addToLogs(type, Server.S_SEQ, Server.O_VAL, id, Server.R_NUM);
 
 	            /* Respond to the client */
 	            output.println(response);
 	            output.flush();
 
-	            /* When a reader client is about to finish, decrement the rNum variable */
+	            // When a reader client is about to finish, decrement the rNum variable 
 	            if (type.equals("READER")) {
 	                Server.R_NUM--;
 	            }
 	        } catch (Exception e) {
 	            request = this.getName(); //reused String line for getting thread name
-	            System.out.println("IO Error/ Client " + request + " terminated abruptly");
+	            System.out.println("IO Error/ Client " + request + " terminated");
 	        } finally {
 	            try {
 	                System.out.println("Connection Closing..");
@@ -207,10 +208,5 @@ package server;
 	        } else {
 	            Server.writersLog.add(record);
 	        }
-	    }
-
-	    private String buildResponse(String type, int rSeq, int sSeq, int O_VAL) {
-	        String response = rSeq + " " + sSeq;
-	        return type.equals("WRITER") ? response : response + " " + String.valueOf(O_VAL);
 	    }
 	}
