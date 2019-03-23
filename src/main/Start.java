@@ -54,7 +54,7 @@ public class Start {
 			else if (i > numberOfReaders + 3 && i < numberOfReaders + numberOfWriters + 4) {
 				writersAdd[i - 4 - numberOfReaders] = s.split("=")[1];
                 String number = s.split("=")[0];
-                writersIDs[i - 4 - numberOfReaders] = s.split("=")[0].charAt(number.length() - 1) - '0' + 1 + numberOfReaders;
+                writersIDs[i - 4 - numberOfReaders] = s.split("=")[0].charAt(number.length() - 1) - '0' + 1;
                 //System.out.println(writersAdd[i - 4 - numberOfReaders]+" "+writersIDs[i - 4 - numberOfReaders]);
 			}
 			else {
@@ -95,17 +95,17 @@ public class Start {
 		SSHConnection con = new SSHConnection();
 		 try {
 			 con.sendCommand("cd .//client; \n");
-             Thread.sleep(300);
+			 Thread.sleep(300);
 	            for (int i = 0; i < readersIDs.length; i++) {
 	            													//replace userName and pass
 	                if (con.openConnection(readersAdd[i], securePort, "ClientName", "pass", 120000)) {
-	                    Thread.sleep(300);
+	                    
 
 	                    con.sendCommand("javac Client.java \n");
 	                    Thread.sleep(300);
 
 	                    con.sendCommand("java Client " + serverAdd + " " + serverPort + " READER " + readersIDs[i] + " "
-	                            + numberOfAccess + " " + readersIDs.length + "\n");
+	                            + numberOfAccess + " " + readersIDs.length+ " \n");
 	                    Thread.sleep(300);
 
 	                }
@@ -120,7 +120,7 @@ public class Start {
 	                    Thread.sleep(300);
 	                    //Args to be discussed
 	                    con.sendCommand("java Client " + serverAdd + " " + serverPort + " WRITER " + writersIDs[i] + " "
-	                            + numberOfAccess + " " + writersIDs.length + "\n");
+	                            + numberOfAccess + " " + writersIDs.length+ " \n");
 	                    Thread.sleep(300);
 
 	                }

@@ -13,7 +13,9 @@ public class Client {
         String type = args[2];
         String id = args[3];
         int noOfAccesses = Integer.parseInt(args[4]);
-        
+        int readers = 0; 
+        if(type == "READER")
+        	readers++;
         Socket s = null;
         // to send to server
         String request = null;
@@ -21,7 +23,7 @@ public class Client {
         BufferedReader input = null;
         // to write in file
         PrintWriter output = null;
-        PrintWriter fwriter = new PrintWriter(   "logs/" + "log" + String.valueOf(id) + ".txt", "UTF-8");
+        PrintWriter fwriter = new PrintWriter(   "logs/" + "log" + type == "READER" ? String.valueOf(id) : String.valueOf(id+ readers) + ".txt", "UTF-8");
         fwriter.println("Client type: " + type);
         String header = (type.equals("READER")? "rSeq---sSeq---oVal" : "rSeq---sSeq");
        fwriter.println(header);
@@ -39,7 +41,7 @@ public class Client {
 
             try {
             	
-                request = type + " " + id ;
+                request = type + " " + id;
                 output.println(request);
                 output.flush();
                 response = input.readLine();
