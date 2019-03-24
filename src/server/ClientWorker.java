@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import utils.log.record.Record;
+import utils.types.RequestType;
 
 public class ClientWorker extends Thread {
 	private Socket s;
@@ -32,15 +33,15 @@ public class ClientWorker extends Thread {
         try {
             request = input.readLine();
             String[] splittedData = request.split(" ");
-            String type = splittedData[0];
             int id = Integer.parseInt(splittedData[1]);
             int val = -1;
             Record r = null;
+            RequestType type = RequestType.toRequestType(splittedData[0]);
             // A reader has entered the system, increase the rNum 
-            if (type.equals("W")) {
+            if (type == RequestType.WRITE) {
                 val = Integer.parseInt(splittedData[2]);
                 r = object.writeValue(id, rSeq, val);
-            } else if (type.equals("R")) {
+            } else if (type == RequestType.READ) {
             	r = object.readValue(id, rSeq);
             } else {
             	throw new RuntimeException("Invalid operation !");
