@@ -18,12 +18,12 @@ public enum RequestType {
 	
 	public Worker generateWorker() {
 		switch(this) {
-		case READ:
-			return new ReadWorker();
-		case WRITE:
-			return new WriteWorker();
-		default:
-			return null;
+			case READ:
+				return new ReadWorker();
+			case WRITE:
+				return new WriteWorker();
+			default:
+				return null;
 		}
 	}
 	

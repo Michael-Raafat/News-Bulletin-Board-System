@@ -1,13 +1,15 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import server.ServerWorker;
+import utils.ClientArgs;
 import utils.SSHConnection;
 import utils.SystemConfiguration;
+import utils.types.RequestType;
 
 public class Start {
-	private static final int securePort = 22;
-	
-	
 	public static void main(String[] args) {
 		SystemConfiguration c = new SystemConfiguration("system.properties.txt");
 		if (c.validConfiguration()) {
@@ -17,12 +19,22 @@ public class Start {
 				System.exit(-1);
 			}
 			t.start();
-			createClients(c);
+			List<Process> processes = createClients(c);
 			try {
 				t.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			System.out.println("Server finished serving all requests");
+			for (int i = 0; i < processes.size(); i++) {
+				try {
+					processes.get(i).waitFor();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			System.out.println("All clients terminated");
 		} else {
 			System.out.println("Invalid Configuration");
 		}
@@ -42,26 +54,33 @@ public class Start {
 		return worker;
 	}
 	
-	public static void createClients(SystemConfiguration c) {
+	public static List<Process> createClients(SystemConfiguration c) {
 		// calling client.java to create readers and writers
 		SSHConnection con = new SSHConnection();
+		List<Process> processes = new ArrayList<Process>();
 		 try {
 			 for (int i = 0; i < c.getNumberOfReaders(); i++) {
-				 if (con.openConnection(c.getReadersAdd()[i], securePort, "amr", c.getReadersPass()[i], 120000)) {
-	                    
-
-	                    con.sendCommand("echo Client.java hello");
-	                    System.out.println(con.recvData());
-	                    Thread.sleep(300);
-	                    con.closeConnection();
-	                }
+				 ClientArgs args = new ClientArgs(RequestType.READ,
+						 String.valueOf(c.getReadersIDs()[i]), c.getServerAdd(), c.getServerPort(), c.getNumberOfAccess());
+				 System.out.println("Creating reader process " + i);
+				 if (con.openConnection(c.getReadersAdd()[i], c.getReadersPass()[i], args)) {
+					System.out.println("Created !");
+                    processes.add(con.closeConnection());
+                }
 			 }
 			 for (int i = 0; i < c.getNumberOfWriters(); i++) {
-				 
+				 ClientArgs args = new ClientArgs(RequestType.WRITE,
+						 String.valueOf(c.getWritersIDs()[i]), c.getServerAdd(), c.getServerPort(), c.getNumberOfAccess());
+				 System.out.println("Creating writer process " + i);
+				 if (con.openConnection(c.getWritersAdd()[i], c.getReadersPass()[i], args)) {
+					System.out.println("Created !");
+					processes.add(con.closeConnection());
+                }
 			 }	             
         } catch (Exception e) {
             e.printStackTrace();
         }
+		 return processes;
 	}
 		
 }

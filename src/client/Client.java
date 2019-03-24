@@ -13,8 +13,10 @@ public class Client {
         int noOfAccesses = Integer.parseInt(args[4]);
         Worker worker = type.generateWorker();
         if (worker != null) {
+        	System.out.println("Starting worker");
         	worker.execute(id, serverAdd, port, noOfAccesses);
         	worker.print_log(id);
+        	System.out.println("Done");
         } else {
         	System.out.println("Invalid Request Type For Client!");
         }

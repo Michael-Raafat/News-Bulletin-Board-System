@@ -35,6 +35,7 @@ public class ServerWorker extends Thread {
             try {
             	requestNumber--;
                 Acceptsocket = serverSocket.accept();
+                System.out.println("Accepted connection #" + rSeq);
                 ClientWorker thread = new ClientWorker(Acceptsocket, rSeq, object);
                 rSeq++;
                 thread.start();
@@ -48,7 +49,6 @@ public class ServerWorker extends Thread {
 			try {
 				threads.get(i).join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }

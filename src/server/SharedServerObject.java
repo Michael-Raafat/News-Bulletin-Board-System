@@ -40,6 +40,7 @@ public class SharedServerObject {
 		int rNum = nRead.get();
 		ReadRecord rec = new ReadRecord(sSequ, rSeq, value, rNum, id);
 		valLock.readLock().unlock();
+		log.addToLog(rec);
 		nRead.decrementAndGet();
 		return rec;
 	}
@@ -50,6 +51,7 @@ public class SharedServerObject {
 		int sSequ = sSeq.getAndIncrement();
 		WriteRecord rec = new WriteRecord(sSequ, rSeq, value, id);
 		valLock.writeLock().unlock();
+		log.addToLog(rec);
 		return rec;
 	}
 	

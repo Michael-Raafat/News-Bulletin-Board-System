@@ -57,18 +57,14 @@ public class ClientWorker extends Thread {
             System.out.println("IO Error/ Client " + request + " terminated");
         } finally {
             try {
-                System.out.println("Connection Closing..");
                 if (input != null) {
                     input.close();
-                    System.out.println("Socket Input Stream Closed");
                 }
                 if (output != null) {
                     output.close();
-                    System.out.println("Socket Out Closed");
                 }
                 if (s != null) {
                     s.close();
-                    System.out.println("Socket Closed");
                 }
             } catch (IOException ie) {
                 System.out.println("Socket Close Error");
