@@ -1,7 +1,6 @@
 package utils;
 import java.util.Properties;
 import java.io.IOException;
-import java.io.OutputStream;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -13,7 +12,6 @@ public class SSHConnection {
 	private Session mSSHSession = null;
 	//creating new ssh channel
 	private Channel mSSHChannel = null;
-	private OutputStream outputStream = null;
 	
 	//creating new ssh connection 
 	public boolean openConnection(String hostAdd, int port, String userName,
@@ -23,7 +21,7 @@ public class SSHConnection {
 		/* check no key to login */
         Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
-        mJschSSH.setConfig(config);
+        JSch.setConfig(config);
         
         
         try{
@@ -36,7 +34,6 @@ public class SSHConnection {
         	mSSHChannel.connect();
 
         	mSSHChannel.setInputStream(System.in);
-            this.outputStream = mSSHChannel.getOutputStream();
             success = true;
 			System.out.println(">>>");
 
@@ -84,11 +81,15 @@ public class SSHConnection {
 	}
 	
 	public void closeConnection () {
-		if (mSSHSession != null)
+		if (mSSHSession != null) {
 			mSSHSession.disconnect();
-		if (mSSHChannel != null)
+			mSSHSession = null;
+		}
+		if (mSSHChannel != null) {
 			mSSHChannel.disconnect();
-		mJschSSH = null;		
+			mSSHChannel = null;
+		}
+		mJschSSH = null;	
 	}
 	
 }
