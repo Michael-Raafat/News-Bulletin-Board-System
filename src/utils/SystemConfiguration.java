@@ -180,6 +180,7 @@ public class SystemConfiguration {
 	    	 System.out.println("\t\t\tAddress : " + writersAdd[i] + "\n\t\t\tId : "
 	    			 + writersIDs[i] + "\n\t\t\tPassword : " + writersPass[i]);
 	      }
+	      System.out.println("\tNumber of Accesses : " + numberOfAccess);
 	    } catch (Exception e) { 
 	    	e.printStackTrace();
 	      error = true;

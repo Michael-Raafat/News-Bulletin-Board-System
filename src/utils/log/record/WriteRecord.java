@@ -16,10 +16,10 @@ public class WriteRecord implements Record {
 	
 	public WriteRecord(String s) {
 		String[] args = s.split(" ");
-		sSeq = Integer.parseInt(args[0]);
-		rSeq = Integer.parseInt(args[1]);
-		oVal = Integer.parseInt(args[2]);
-		wId = Integer.parseInt(args[3]);
+		sSeq = Integer.parseInt(args[0].trim());
+		rSeq = Integer.parseInt(args[1].trim());
+		oVal = Integer.parseInt(args[2].trim());
+		wId = Integer.parseInt(args[3].trim());
 	}
 	
 	public String toString() {

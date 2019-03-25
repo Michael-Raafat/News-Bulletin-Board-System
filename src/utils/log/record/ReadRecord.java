@@ -18,11 +18,11 @@ public class ReadRecord implements Record{
 	
 	public ReadRecord(String s) {
 		String[] args = s.split(" ");
-		sSeq = Integer.parseInt(args[0]);
-		rSeq = Integer.parseInt(args[1]);
-		oVal = Integer.parseInt(args[2]);
-		rNum = Integer.parseInt(args[3]);
-		rId = Integer.parseInt(args[4]);
+		sSeq = Integer.parseInt(args[0].trim());
+		rSeq = Integer.parseInt(args[1].trim());
+		oVal = Integer.parseInt(args[2].trim());
+		rNum = Integer.parseInt(args[3].trim());
+		rId = Integer.parseInt(args[4].trim());
 	}
 	
 	public String toString() {

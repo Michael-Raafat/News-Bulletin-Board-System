@@ -4,12 +4,17 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.Semaphore;
+
 import server.SharedServerObject;
 
 public class RMIServerWorker extends Thread {
 	private int port;
 	private int rmiPort;
     private int requestNumber;
+    private static Registry reg;
+    private static ClientController controller;
+    private static RemoteAccessController rController;
 
     public RMIServerWorker(int port, int rmiPort, int requestNumber) {
         this.port = port;
@@ -18,22 +23,22 @@ public class RMIServerWorker extends Thread {
     }
 
     public void run() {
+    	Semaphore sem = new Semaphore(-requestNumber + 1); 
     	SharedServerObject object = SharedServerObject.getSharedObject();
-    	ClientController controller = new ClientController(requestNumber, this);
+    	controller = new ClientController(sem);
     	try {
     		LocateRegistry.createRegistry(rmiPort);
-			RemoteAccessController rController = (RemoteAccessController) UnicastRemoteObject.exportObject(controller, port);
-			Registry reg = LocateRegistry.getRegistry(rmiPort);
+			rController = (RemoteAccessController) UnicastRemoteObject.exportObject(controller, port);
+			reg = LocateRegistry.getRegistry(rmiPort);
 			reg.rebind("RemoteAccessController", rController);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
     	System.out.println("Server registered RMI successfully!");
     	try {
-    		synchronized (this) {
-    			this.wait();
-			}
+			sem.acquire();
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         System.out.println("Server served all requests!");

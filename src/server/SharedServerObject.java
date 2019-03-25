@@ -1,5 +1,6 @@
 package server;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -15,6 +16,7 @@ public class SharedServerObject {
 	private ReadWriteLock valLock;
 	private Log log;
 	
+	private static final int MAX_SLEEP_TIME = 10000;
 	private static SharedServerObject object = null;
 	
 	private SharedServerObject() {
@@ -33,11 +35,16 @@ public class SharedServerObject {
 	}
 	
 	public ReadRecord readValue(int id, int rSeq) {
-		nRead.incrementAndGet();
+		int rNum = nRead.incrementAndGet();
 		valLock.readLock().lock();
+		Random rand = new Random();
+		try {
+			Thread.sleep(rand.nextInt(MAX_SLEEP_TIME));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		int value = val;
 		int sSequ = sSeq.getAndIncrement();
-		int rNum = nRead.get();
 		ReadRecord rec = new ReadRecord(sSequ, rSeq, value, rNum, id);
 		valLock.readLock().unlock();
 		log.addToLog(rec);
@@ -47,6 +54,12 @@ public class SharedServerObject {
 	
 	public WriteRecord writeValue(int id, int rSeq, int value) {
 		valLock.writeLock().lock();
+		Random rand = new Random();
+		try {
+			Thread.sleep(rand.nextInt(MAX_SLEEP_TIME));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		val = value;
 		int sSequ = sSeq.getAndIncrement();
 		WriteRecord rec = new WriteRecord(sSequ, rSeq, value, id);
