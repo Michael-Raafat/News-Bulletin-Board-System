@@ -3,7 +3,8 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 
-import server.ServerWorker;
+import server.rmi.RMIServerWorker;
+import server.socket.ServerWorker;
 import utils.ClientArgs;
 import utils.SSHConnection;
 import utils.SystemConfiguration;
@@ -11,7 +12,14 @@ import utils.types.RequestType;
 
 public class Start {
 	public static void main(String[] args) {
-		SystemConfiguration c = new SystemConfiguration("system.properties.txt");
+		boolean rmi = false;
+		if (args.length > 0 && args[0].equals("rmi")) {
+			System.out.println("Running in RMI mode");
+			rmi = true;
+		} else {
+			System.out.println("Running in socket mode");
+		}
+		SystemConfiguration c = new SystemConfiguration("system.properties.txt", rmi);
 		if (c.validConfiguration()) {
 			Thread t = createServer(c);
 			if (t == null) {
@@ -30,7 +38,6 @@ public class Start {
 				try {
 					processes.get(i).waitFor();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -44,9 +51,13 @@ public class Start {
 	public static Thread createServer(SystemConfiguration c) {
 		// Creating server thread.
 		int requests = (c.getNumberOfReaders() + c.getNumberOfWriters()) * c.getNumberOfAccess();
-		ServerWorker worker = null;
+		Thread worker = null;
 		try {
-			worker = new ServerWorker(c.getServerPort(), requests);
+			if (c.isRmi()) {
+				worker = new RMIServerWorker(c.getServerPort(), c.getRmiPort(), requests);
+			} else {
+				worker = new ServerWorker(c.getServerPort(), requests);
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			worker = null;
@@ -60,8 +71,14 @@ public class Start {
 		List<Process> processes = new ArrayList<Process>();
 		 try {
 			 for (int i = 0; i < c.getNumberOfReaders(); i++) {
+				 int port;
+				 if (c.isRmi()) {
+					 port = c.getRmiPort();
+				 } else {
+					 port = c.getServerPort();
+				 }
 				 ClientArgs args = new ClientArgs(RequestType.READ,
-						 String.valueOf(c.getReadersIDs()[i]), c.getServerAdd(), c.getServerPort(), c.getNumberOfAccess());
+						 String.valueOf(c.getReadersIDs()[i]), c.getServerAdd(), port, c.getNumberOfAccess(), c.isRmi());
 				 System.out.println("Creating reader process " + i);
 				 if (con.openConnection(c.getReadersAdd()[i], c.getReadersPass()[i], args)) {
 					System.out.println("Created !");
@@ -69,8 +86,14 @@ public class Start {
                 }
 			 }
 			 for (int i = 0; i < c.getNumberOfWriters(); i++) {
+				 int port;
+				 if (c.isRmi()) {
+					 port = c.getRmiPort();
+				 } else {
+					 port = c.getServerPort();
+				 }
 				 ClientArgs args = new ClientArgs(RequestType.WRITE,
-						 String.valueOf(c.getWritersIDs()[i]), c.getServerAdd(), c.getServerPort(), c.getNumberOfAccess());
+						 String.valueOf(c.getWritersIDs()[i]), c.getServerAdd(), port, c.getNumberOfAccess(), c.isRmi());
 				 System.out.println("Creating writer process " + i);
 				 if (con.openConnection(c.getWritersAdd()[i], c.getReadersPass()[i], args)) {
 					System.out.println("Created !");

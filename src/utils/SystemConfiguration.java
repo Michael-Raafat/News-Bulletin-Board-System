@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class SystemConfiguration {
@@ -15,6 +16,9 @@ public class SystemConfiguration {
 	private String[] readersAdd, writersAdd;
 	private String[] readersPass, writersPass;
 	private int[] readersIDs, writersIDs;
+	private int rmiPort;
+	private boolean rmi;
+	
 	boolean error;
 	
 	public String getServerAdd() {
@@ -61,57 +65,109 @@ public class SystemConfiguration {
 		return writersIDs;
 	}
 	
-	public SystemConfiguration (String filename) {
+	public SystemConfiguration (String filename, boolean rmi) {
 		error = false;
+		this.rmi = rmi;
 		List<String> lines = Collections.emptyList(); 
 	    try
 	    { 
 	      lines = Files.readAllLines(Paths.get(filename), StandardCharsets.UTF_8);
+	      HashMap<String, String> properties = new HashMap<String, String>();
 	      for (int i = 0; i < lines.size(); i++) {
-				String s = lines.get(i);
-				if (i == 0)
-					serverAdd = s.substring(s.indexOf("=")+1);
-				else if(i == 1)
-					serverPort = Integer.parseInt(s.substring(s.indexOf("=")+1));
-				else if (i == 2) {
-					numberOfReaders =  Integer.parseInt(s.substring(s.indexOf("=")+1));
-					readersIDs = new int [numberOfReaders];
-					readersAdd = new String [numberOfReaders];
-					readersPass = new String[numberOfReaders];
-				} else if (i > 2 && i < 3 + numberOfReaders) {
-					String readerId = s.substring(9, s.indexOf("="));
-					String kol = s.substring(s.indexOf("=") + 1);
+	    	  String s = lines.get(i);
+	    	  properties.put(s.substring(3, s.indexOf("=")), s.substring(s.indexOf("=") + 1));
+	      }
+	      if (rmi) {
+	    	  if (properties.containsKey("rmiregistry.port")) {
+		    	  rmiPort = Integer.parseInt(properties.get("rmiregistry.port"));
+		      } else {
+		    	  error = true;
+		    	  System.out.println("Error! missing port of rmi service!");
+		    	  return;
+		      }
+	      }
+	      if (properties.containsKey("server")) {
+	    	  serverAdd =properties.get("server");
+	      } else {
+	    	  error = true;
+	    	  System.out.println("Error! missing address of server!");
+	    	  return;
+	      }
+	      if (properties.containsKey("server.port")) {
+	    	  serverPort = Integer.parseInt(properties.get("server.port"));
+	      } else {
+	    	  error = true;
+	    	  System.out.println("Error! missing port of server!");
+	    	  return;
+	      }
+	      if (properties.containsKey("numberOfReaders")) {
+	    	  numberOfReaders = Integer.parseInt(properties.get("numberOfReaders"));
+	      } else {
+	    	  error = true;
+	    	  System.out.println("Error! missing number of readers!");
+	    	  return;
+	      }
+	      if (properties.containsKey("numberOfWriters")) {
+	    	  numberOfWriters = Integer.parseInt(properties.get("numberOfWriters"));
+	      } else {
+	    	  error = true;
+	    	  System.out.println("Error! missing number of writers!");
+	    	  return;
+	      }
+	      if (properties.containsKey("numberOfAccesses")) {
+	    	  numberOfAccess = Integer.parseInt(properties.get("numberOfAccesses"));
+	      } else {
+	    	  error = true;
+	    	  System.out.println("Error! missing number of accesses!");
+	    	  return;
+	      }
+	      
+	      readersIDs = new int [numberOfReaders];
+		  readersAdd = new String [numberOfReaders];
+		  readersPass = new String[numberOfReaders];
+	      for (int i = 0; i < numberOfReaders; i++) {
+	    	  if (properties.containsKey("reader" + i)) {
+	    		  String kol = properties.get("reader" + i);
 					int index = kol.indexOf(" ");
 					if (index == -1) {
 						index = kol.length();
 					}
 					String add = kol.substring(0, index);
-	                readersAdd[i - 3] = add;
-	                readersIDs[i - 3] = Integer.parseInt(readerId) + 1;
-	                readersPass[i - 3] = kol.substring(index);
-				} else if (i == 3 + numberOfReaders) {
-					numberOfWriters =  Integer.parseInt(s.substring(s.indexOf("=")+1));
-					writersIDs = new int [numberOfWriters];
-					writersAdd = new String [numberOfWriters];
-					writersPass = new String[numberOfWriters];
-				} else if (i > numberOfReaders + 3 && i < numberOfReaders + numberOfWriters + 4) {
-					String writerId = s.substring(9, s.indexOf("="));
-					String kol = s.substring(s.indexOf("=") + 1);
+	    		  readersIDs[i] = i + 1;
+	    		  readersAdd[i] = add;
+	    		  readersPass[i] = kol.substring(index);;
+	    	  } else {
+	    		  error = true;
+	    		  System.out.println("Missing reader with tag 'reader" + i + "'");
+	    		  return;
+	    	  }
+	      }
+	      writersIDs = new int [numberOfWriters];
+	      writersAdd = new String [numberOfWriters];
+	      writersPass = new String[numberOfWriters];
+	      for (int i = 0; i < numberOfWriters; i++) {
+	    	  if (properties.containsKey("writer" + i)) {
+	    		  String kol = properties.get("writer" + i);
 					int index = kol.indexOf(" ");
 					if (index == -1) {
 						index = kol.length();
 					}
 					String add = kol.substring(0, index);
-	                writersAdd[i - 4 - numberOfReaders] = add;
-	                writersIDs[i - 4 - numberOfReaders] = Integer.parseInt(writerId) + 1 + numberOfReaders;
-	                writersPass[i - 4 - numberOfReaders] = kol.substring(index);
-	            } else {
-					numberOfAccess = Integer.parseInt(s.substring(s.indexOf("=")+1));
-				}
-			}
+				  writersIDs[i] = i + 1 + numberOfReaders;
+	    		  writersAdd[i] = add;
+	    		  writersPass[i] = kol.substring(index);;
+	    	  } else {
+	    		  error = true;
+	    		  System.out.println("Missing reader with tag 'reader" + i + "'");
+	    		  return;
+	    	  }
+	      }
 	      System.out.println("System configuration detected : ");
 	      System.out.println("\tServer Address : " + serverAdd);
 	      System.out.println("\tServer Port : " + serverPort);
+	      if (rmi) {
+	    	  System.out.println("\tRMI Port : " + rmiPort);
+	      }
 	      System.out.println("\tNumber of readers : " + numberOfReaders);
 	      for (int i = 0; i < numberOfReaders; i++) {
 	    	 System.out.println("\t\tReader " + i + " : ");
@@ -130,7 +186,15 @@ public class SystemConfiguration {
 	    }
 	}
 	
+	public int getRmiPort() {
+		return rmiPort;
+	}
+
 	public boolean validConfiguration() {
 		return !error;
+	}
+
+	public boolean isRmi() {
+		return rmi;
 	}
 }

@@ -7,12 +7,20 @@ import java.io.InputStreamReader;
 public class SSHConnection {
 	private Process p;
 	private BufferedReader in;
+	private static final String SOCK_CLIENT = "clientV1.jar";
+	private static final String RMI_CLIENT = "clientV2.jar";
 	//creating new ssh connection 
 	public boolean openConnection(String hostAdd, String password, ClientArgs args) {
 		boolean success = false;
 		try {
 			String path = System.getProperty("user.dir");
-			p = Runtime.getRuntime().exec("ssh " + hostAdd + " cd " + path + " ; java -jar clientV1.jar " + args.toString() +" ; exit");
+			String clientJar;
+			if (args.rmi) {
+				clientJar = RMI_CLIENT;
+			} else {
+				clientJar = SOCK_CLIENT;
+			}
+			p = Runtime.getRuntime().exec("ssh " + hostAdd + " cd " + path + " ; java -jar " + clientJar + " " + args.toString() +" ; exit");
 			in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			System.out.println("data from process : " + recvData());
 			success = true;

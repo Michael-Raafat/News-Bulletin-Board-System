@@ -1,4 +1,4 @@
-package client.worker;
+package client.socket.worker;
 
 import utils.types.RequestType;
 

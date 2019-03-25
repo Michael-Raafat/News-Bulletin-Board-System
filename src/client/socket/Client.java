@@ -1,7 +1,8 @@
-package client;
+package client.socket;
 
 import java.io.IOException;
-import client.worker.Worker;
+
+import client.socket.worker.Worker;
 import utils.types.RequestType;
 
 public class Client {

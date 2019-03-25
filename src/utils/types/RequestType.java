@@ -1,8 +1,8 @@
 package utils.types;
 
-import client.worker.ReadWorker;
-import client.worker.Worker;
-import client.worker.WriteWorker;
+import client.socket.worker.ReadWorker;
+import client.socket.worker.Worker;
+import client.socket.worker.WriteWorker;
 
 public enum RequestType {
 	READ, WRITE;

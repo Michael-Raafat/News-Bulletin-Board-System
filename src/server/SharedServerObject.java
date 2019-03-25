@@ -25,7 +25,7 @@ public class SharedServerObject {
 		log = new Log();
 	}
 	
-	static SharedServerObject getSharedObject() {
+	public static SharedServerObject getSharedObject() {
 		if (object == null) {
 			object = new SharedServerObject();
 		}

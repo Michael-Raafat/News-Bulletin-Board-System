@@ -8,14 +8,16 @@ public class ClientArgs {
 	String serverAdd;
     int port;
     int noOfAccesses;
+    boolean rmi;
     
-	public ClientArgs(RequestType type, String id, String serverAdd, int port, int noOfAccesses) {
+	public ClientArgs(RequestType type, String id, String serverAdd, int port, int noOfAccesses, boolean rmi) {
 		super();
 		this.type = type;
 		this.id = id;
 		this.serverAdd = serverAdd;
 		this.port = port;
 		this.noOfAccesses = noOfAccesses;
+		this.rmi = rmi;
 	}
 	
 	public String toString() {
