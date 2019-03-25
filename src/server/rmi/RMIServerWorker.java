@@ -30,7 +30,9 @@ public class RMIServerWorker extends Thread {
 		}
     	System.out.println("Server registered RMI successfully!");
     	try {
-			this.wait();
+    		synchronized (this) {
+    			this.wait();
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

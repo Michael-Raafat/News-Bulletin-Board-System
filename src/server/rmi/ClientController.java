@@ -35,8 +35,11 @@ public class ClientController implements RemoteAccessController {
 			rec = recw;
 		}
 		if (rSeq == requests) {
-			t.notify();
+			synchronized (t) {
+				t.notifyAll();
+			}
 		}
+		System.out.println("Done request #" + rSeq);
 		if (rec != null) {
 			return rec.toString();
 		} else {
