@@ -67,7 +67,7 @@ public class Start {
 	
 	public static List<Process> createClients(SystemConfiguration c) {
 		// calling client.java to create readers and writers
-		SSHConnection con = new SSHConnection();
+		SSHConnection con = new SSHConnection(c.getUserName(), c.getUserPass());
 		List<Process> processes = new ArrayList<Process>();
 		 try {
 			 for (int i = 0; i < c.getNumberOfReaders(); i++) {
@@ -80,7 +80,7 @@ public class Start {
 				 ClientArgs args = new ClientArgs(RequestType.READ,
 						 String.valueOf(c.getReadersIDs()[i]), c.getServerAdd(), port, c.getNumberOfAccess(), c.isRmi());
 				 System.out.println("Creating reader process " + i);
-				 if (con.openConnection(c.getReadersAdd()[i], c.getReadersPass()[i], args)) {
+				 if (con.openConnection(c.getReadersAdd()[i], c.getUserPass(), c.getUserName(), args)) {
 					System.out.println("Created !");
                     processes.add(con.closeConnection());
                 }
@@ -95,7 +95,7 @@ public class Start {
 				 ClientArgs args = new ClientArgs(RequestType.WRITE,
 						 String.valueOf(c.getWritersIDs()[i]), c.getServerAdd(), port, c.getNumberOfAccess(), c.isRmi());
 				 System.out.println("Creating writer process " + i);
-				 if (con.openConnection(c.getWritersAdd()[i], c.getReadersPass()[i], args)) {
+				 if (con.openConnection(c.getWritersAdd()[i], c.getUserPass(), c.getUserName(), args)) {
 					System.out.println("Created !");
 					processes.add(con.closeConnection());
                 }

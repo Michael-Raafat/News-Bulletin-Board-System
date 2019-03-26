@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SystemConfiguration {
+	private String userName;
+	private String userPass;
 	private String serverAdd;
 	private int serverPort;
 	private int numberOfReaders;
@@ -20,6 +22,14 @@ public class SystemConfiguration {
 	private boolean rmi;
 	
 	boolean error;
+	
+	public String getUserName() {
+		return userName;
+	}
+
+	public String getUserPass() {
+		return userPass;
+	}
 	
 	public String getServerAdd() {
 		return serverAdd;
@@ -76,6 +86,16 @@ public class SystemConfiguration {
 	      for (int i = 0; i < lines.size(); i++) {
 	    	  String s = lines.get(i);
 	    	  properties.put(s.substring(3, s.indexOf("=")), s.substring(s.indexOf("=") + 1));
+	      }
+	      if (properties.containsKey("machine")) {
+	    	  String kol = properties.get("machine");
+	    	  int index = kol.indexOf(" ");
+	    	  if (index == -1) {
+	    		  index = kol.length();
+	    	  }
+	    	  String name = kol.substring(0, index);
+	    	  userName = name;
+    		  userPass = kol.substring(index);
 	      }
 	      if (rmi) {
 	    	  if (properties.containsKey("rmiregistry.port")) {
