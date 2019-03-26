@@ -67,7 +67,7 @@ public class Start {
 	
 	public static List<Process> createClients(SystemConfiguration c) {
 		// calling client.java to create readers and writers
-		SSHConnection con = new SSHConnection(c.getUserName(), c.getUserPass());
+		SSHConnection con = new SSHConnection();
 		List<Process> processes = new ArrayList<Process>();
 		 try {
 			 for (int i = 0; i < c.getNumberOfReaders(); i++) {

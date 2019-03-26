@@ -15,16 +15,10 @@ public class SSHConnection {
 	private BufferedReader in;
 	private static final String SOCK_CLIENT = "clientV1.jar";
 	private static final String RMI_CLIENT = "clientV2.jar";
-	private String username;
-	private String machinePass;
 	private Session session;
 	private Channel channel;
 	
-	public SSHConnection(final String machinePass, final String username) {
-		//TODO manually placing username and password of machine.
-		this.username = username;
-		this.machinePass = machinePass;
-	}
+	
 	//creating new ssh connection 
 	public boolean openConnection(String hostAdd, String machinePass, String username, ClientArgs args) {
 		boolean success = false;
@@ -34,11 +28,11 @@ public class SSHConnection {
 	    	config.put("StrictHostKeyChecking", "no");
 			JSch jsch = new JSch();
 			jsch.setConfig(config);
-			session=jsch.getSession(this.username, hostAdd, 22);
-	    	session.setPassword(this.machinePass);
+			session=jsch.getSession(username, hostAdd, 22);
+	    	session.setPassword(machinePass);
 	    	session.setConfig(config);
 	    	session.connect(10000);
-	    	System.out.println("Connected");
+			System.out.println("Connected");
 	    	
 			
 			String clientJar;

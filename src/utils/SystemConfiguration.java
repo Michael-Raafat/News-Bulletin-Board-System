@@ -95,7 +95,7 @@ public class SystemConfiguration {
 	    	  }
 	    	  String name = kol.substring(0, index);
 	    	  userName = name;
-    		  userPass = kol.substring(index);
+    		  userPass = kol.substring(index + 1);
 	      }
 	      if (rmi) {
 	    	  if (properties.containsKey("rmiregistry.port")) {
