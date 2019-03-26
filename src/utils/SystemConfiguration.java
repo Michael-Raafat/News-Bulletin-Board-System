@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SystemConfiguration {
-	private String userName;
-	private String userPass;
 	private String serverAdd;
 	private int serverPort;
 	private int numberOfReaders;
 	private int numberOfWriters;
 	private int numberOfAccess;
 	private String[] readersAdd, writersAdd;
+	private String[] readersUsername, writersUsername;
 	private String[] readersPass, writersPass;
 	private int[] readersIDs, writersIDs;
 	private int rmiPort;
@@ -23,13 +22,6 @@ public class SystemConfiguration {
 	
 	boolean error;
 	
-	public String getUserName() {
-		return userName;
-	}
-
-	public String getUserPass() {
-		return userPass;
-	}
 	
 	public String getServerAdd() {
 		return serverAdd;
@@ -75,6 +67,13 @@ public class SystemConfiguration {
 		return writersIDs;
 	}
 	
+	public String[] getReadersUsername() {
+		return readersUsername;
+	}
+
+	public String[] getWritersUsername() {
+		return writersUsername;
+	}
 	public SystemConfiguration (String filename, boolean rmi) {
 		error = false;
 		this.rmi = rmi;
@@ -87,16 +86,7 @@ public class SystemConfiguration {
 	    	  String s = lines.get(i);
 	    	  properties.put(s.substring(3, s.indexOf("=")), s.substring(s.indexOf("=") + 1));
 	      }
-	      if (properties.containsKey("machine")) {
-	    	  String kol = properties.get("machine");
-	    	  int index = kol.indexOf(" ");
-	    	  if (index == -1) {
-	    		  index = kol.length();
-	    	  }
-	    	  String name = kol.substring(0, index);
-	    	  userName = name;
-    		  userPass = kol.substring(index + 1);
-	      }
+	      
 	      if (rmi) {
 	    	  if (properties.containsKey("rmiregistry.port")) {
 		    	  rmiPort = Integer.parseInt(properties.get("rmiregistry.port"));
@@ -141,41 +131,56 @@ public class SystemConfiguration {
 	    	  System.out.println("Error! missing number of accesses!");
 	    	  return;
 	      }
-	      
+	      readersUsername = new String[numberOfReaders];
 	      readersIDs = new int [numberOfReaders];
 		  readersAdd = new String [numberOfReaders];
 		  readersPass = new String[numberOfReaders];
 	      for (int i = 0; i < numberOfReaders; i++) {
 	    	  if (properties.containsKey("reader" + i)) {
-	    		  String kol = properties.get("reader" + i);
-					int index = kol.indexOf(" ");
-					if (index == -1) {
-						index = kol.length();
-					}
-					String add = kol.substring(0, index);
-	    		  readersIDs[i] = i + 1;
-	    		  readersAdd[i] = add;
-	    		  readersPass[i] = kol.substring(index);;
+	    		 String kol = properties.get("reader" + i);
+	    		 int indexU = kol.indexOf("@");
+	    		 if (indexU == -1) {
+	    			 indexU = kol.length();
+	    		 }
+	    		 String name = kol.substring(0, indexU);
+	    		 
+	    		 int indexA = kol.indexOf(" ");
+	    		 if (indexA == -1) {
+	    			 indexA = kol.length();
+	    		 }
+	    		 String add = kol.substring(indexU + 1, indexA);
+	    		 readersUsername[i] = name;
+	    		 readersIDs[i] = i + 1;
+	    		 readersAdd[i] = add;
+	    		 readersPass[i] = kol.substring(indexA + 1);
 	    	  } else {
 	    		  error = true;
 	    		  System.out.println("Missing reader with tag 'reader" + i + "'");
 	    		  return;
 	    	  }
 	      }
+	      writersUsername = new String[numberOfReaders];
 	      writersIDs = new int [numberOfWriters];
 	      writersAdd = new String [numberOfWriters];
 	      writersPass = new String[numberOfWriters];
 	      for (int i = 0; i < numberOfWriters; i++) {
 	    	  if (properties.containsKey("writer" + i)) {
-	    		  String kol = properties.get("writer" + i);
-					int index = kol.indexOf(" ");
-					if (index == -1) {
-						index = kol.length();
-					}
-					String add = kol.substring(0, index);
-				  writersIDs[i] = i + 1 + numberOfReaders;
-	    		  writersAdd[i] = add;
-	    		  writersPass[i] = kol.substring(index);;
+	    		 String kol = properties.get("writer" + i);
+	    		 int indexU = kol.indexOf("@");
+	    		 if (indexU == -1) {
+	    			 indexU = kol.length();
+	    		 }
+	    		 String name = kol.substring(0, indexU);
+	    		 
+	    		 int indexA = kol.indexOf(" ");
+	    		 if (indexA == -1) {
+	    			 indexA = kol.length();
+	    		 }
+	    		 String add = kol.substring(indexU + 1, indexA);
+				 writersUsername[i] = name;
+	    		 writersIDs[i] = i + 1 + numberOfWriters;
+	    		 writersAdd[i] = add;
+	    		 writersPass[i] = kol.substring(indexA + 1);
 	    	  } else {
 	    		  error = true;
 	    		  System.out.println("Missing reader with tag 'reader" + i + "'");

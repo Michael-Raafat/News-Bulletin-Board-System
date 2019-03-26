@@ -80,7 +80,7 @@ public class Start {
 				 ClientArgs args = new ClientArgs(RequestType.READ,
 						 String.valueOf(c.getReadersIDs()[i]), c.getServerAdd(), port, c.getNumberOfAccess(), c.isRmi());
 				 System.out.println("Creating reader process " + i);
-				 if (con.openConnection(c.getReadersAdd()[i], c.getUserPass(), c.getUserName(), args)) {
+				 if (con.openConnection(c.getReadersAdd()[i], c.getReadersPass()[i], c.getReadersUsername()[i], args)) {
 					System.out.println("Created !");
                     processes.add(con.closeConnection());
                 }
@@ -95,7 +95,7 @@ public class Start {
 				 ClientArgs args = new ClientArgs(RequestType.WRITE,
 						 String.valueOf(c.getWritersIDs()[i]), c.getServerAdd(), port, c.getNumberOfAccess(), c.isRmi());
 				 System.out.println("Creating writer process " + i);
-				 if (con.openConnection(c.getWritersAdd()[i], c.getUserPass(), c.getUserName(), args)) {
+				 if (con.openConnection(c.getWritersAdd()[i], c.getWritersPass()[i], c.getWritersUsername()[i], args)) {
 					System.out.println("Created !");
 					processes.add(con.closeConnection());
                 }

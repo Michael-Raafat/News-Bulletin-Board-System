@@ -20,7 +20,7 @@ public class SSHConnection {
 	
 	
 	//creating new ssh connection 
-	public boolean openConnection(String hostAdd, String machinePass, String username, ClientArgs args) {
+	public boolean openConnection(String hostAdd, String password, String username, ClientArgs args) {
 		boolean success = false;
 		try {
 			String path = System.getProperty("user.dir");
@@ -29,7 +29,7 @@ public class SSHConnection {
 			JSch jsch = new JSch();
 			jsch.setConfig(config);
 			session=jsch.getSession(username, hostAdd, 22);
-	    	session.setPassword(machinePass);
+	    	session.setPassword(password);
 	    	session.setConfig(config);
 	    	session.connect(10000);
 			System.out.println("Connected");
