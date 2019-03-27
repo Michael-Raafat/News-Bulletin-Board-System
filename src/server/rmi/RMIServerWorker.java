@@ -12,14 +12,17 @@ public class RMIServerWorker extends Thread {
 	private int port;
 	private int rmiPort;
     private int requestNumber;
+    private String serverAddress;
     private static Registry reg;
     private static ClientController controller;
     private static RemoteAccessController rController;
 
-    public RMIServerWorker(int port, int rmiPort, int requestNumber) {
+    public RMIServerWorker(int port, int rmiPort, int requestNumber,
+    		String address) {
         this.port = port;
         this.requestNumber = requestNumber;
         this.rmiPort = rmiPort;
+        this.serverAddress = address;
     }
 
     public void run() {
@@ -27,6 +30,7 @@ public class RMIServerWorker extends Thread {
     	SharedServerObject object = SharedServerObject.getSharedObject();
     	controller = new ClientController(sem);
     	try {
+    		System.setProperty("java.rmi.server.hostname",serverAddress);
     		LocateRegistry.createRegistry(rmiPort);
 			rController = (RemoteAccessController) UnicastRemoteObject.exportObject(controller, port);
 			reg = LocateRegistry.getRegistry(rmiPort);

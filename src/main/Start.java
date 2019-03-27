@@ -52,7 +52,7 @@ public class Start {
 		Thread worker = null;
 		try {
 			if (c.isRmi()) {
-				worker = new RMIServerWorker(c.getServerPort(), c.getRmiPort(), requests);
+				worker = new RMIServerWorker(c.getServerPort(), c.getRmiPort(), requests, c.getServerAdd());
 			} else {
 				worker = new ServerWorker(c.getServerPort(), requests);
 			}
