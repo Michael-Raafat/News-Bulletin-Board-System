@@ -3,6 +3,8 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jcraft.jsch.ChannelExec;
+
 import server.rmi.RMIServerWorker;
 import server.socket.ServerWorker;
 import utils.ClientArgs;
@@ -27,7 +29,7 @@ public class Start {
 				System.exit(-1);
 			}
 			t.start();
-			List<Process> processes = createClients(c);
+			List<ChannelExec> processes = createClients(c);
 			try {
 				t.join();
 			} catch (InterruptedException e) {
@@ -35,11 +37,7 @@ public class Start {
 			}
 			System.out.println("Server finished serving all requests");
 			for (int i = 0; i < processes.size(); i++) {
-				try {
-					processes.get(i).waitFor();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+					processes.get(i).disconnect();
 			}
 			System.out.println("All clients terminated");
 		} else {
@@ -65,10 +63,10 @@ public class Start {
 		return worker;
 	}
 	
-	public static List<Process> createClients(SystemConfiguration c) {
+	public static List<ChannelExec> createClients(SystemConfiguration c) {
 		// calling client.java to create readers and writers
 		SSHConnection con = new SSHConnection();
-		List<Process> processes = new ArrayList<Process>();
+		List<ChannelExec> processes = new ArrayList<ChannelExec>();
 		 try {
 			 for (int i = 0; i < c.getNumberOfReaders(); i++) {
 				 int port;

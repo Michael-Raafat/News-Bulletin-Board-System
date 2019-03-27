@@ -11,7 +11,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 public class SSHConnection {
-	private Process p;
+	private ChannelExec p;
 	private BufferedReader in;
 	private static final String SOCK_CLIENT = "clientV1.jar";
 	private static final String RMI_CLIENT = "clientV2.jar";
@@ -44,9 +44,9 @@ public class SSHConnection {
 			channel=session.openChannel("exec");
 	        ((ChannelExec)channel).setCommand(" cd " + path + " ; java -jar " +
 	        			clientJar + " " + args.toString() +" ; exit");
-	        channel.setInputStream(null);
-	        ((ChannelExec)channel).setErrStream(System.err);
-	        
+	        //channel.setInputStream(null);
+	        p = (ChannelExec) channel;
+	        //((ChannelExec)channel).setErrStream(System.err);
 	        in = new BufferedReader(new InputStreamReader(channel.getInputStream()));
 	        channel.connect();
 	        
@@ -54,8 +54,6 @@ public class SSHConnection {
 			
 			System.out.println("data from process : " + recvData());
 			success = true;
-			
-	        System.out.println("DONE");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JSchException e) {
@@ -80,8 +78,8 @@ public class SSHConnection {
 		return input;
 	}
 	
-	public Process closeConnection () {
-		Process k = null;
+	public ChannelExec closeConnection () {
+		ChannelExec k = null;
 		try {
 			k = p;
 			in.close();
