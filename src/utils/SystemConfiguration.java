@@ -152,7 +152,11 @@ public class SystemConfiguration {
 	    		 readersUsername[i] = name;
 	    		 readersIDs[i] = i + 1;
 	    		 readersAdd[i] = add;
-	    		 readersPass[i] = kol.substring(indexA + 1);
+	    		 if (indexA != kol.length()) {
+	    			 readersPass[i] = kol.substring(indexA + 1);
+	    		 } else {
+	    			 readersPass[i] = "";
+	    		 }
 	    	  } else {
 	    		  error = true;
 	    		  System.out.println("Missing reader with tag 'reader" + i + "'");
@@ -180,7 +184,11 @@ public class SystemConfiguration {
 				 writersUsername[i] = name;
 	    		 writersIDs[i] = i + 1 + numberOfWriters;
 	    		 writersAdd[i] = add;
-	    		 writersPass[i] = kol.substring(indexA + 1);
+	    		 if (indexA != kol.length()) {
+	    			 writersPass[i] = kol.substring(indexA + 1);
+	    		 } else {
+	    			 writersPass[i] = "";
+	    		 }
 	    	  } else {
 	    		  error = true;
 	    		  System.out.println("Missing reader with tag 'reader" + i + "'");
@@ -196,13 +204,13 @@ public class SystemConfiguration {
 	      System.out.println("\tNumber of readers : " + numberOfReaders);
 	      for (int i = 0; i < numberOfReaders; i++) {
 	    	 System.out.println("\t\tReader " + i + " : ");
-	    	 System.out.println("\t\t\tAddress : " + readersAdd[i] + "\n\t\t\tId : "
+	    	 System.out.println("\t\t\tUsername : " + readersUsername[i] +"\n\t\t\tAddress : " + readersAdd[i] + "\n\t\t\tId : "
 	    			 + readersIDs[i] + "\n\t\t\tPassword : " + readersPass[i]);
 	      }
 	      System.out.println("\tNumber of writers : " + numberOfWriters);
 	      for (int i = 0; i < numberOfWriters; i++) {
 	    	 System.out.println("\t\tWriter " + i + " : ");
-	    	 System.out.println("\t\t\tAddress : " + writersAdd[i] + "\n\t\t\tId : "
+	    	 System.out.println("\t\t\tUsername : " + writersUsername[i] + "\n\t\t\tAddress : " + writersAdd[i] + "\n\t\t\tId : "
 	    			 + writersIDs[i] + "\n\t\t\tPassword : " + writersPass[i]);
 	      }
 	      System.out.println("\tNumber of Accesses : " + numberOfAccess);
