@@ -20,14 +20,13 @@ public class SSHConnection {
 	
 	
 	//creating new ssh connection 
-	public boolean openConnection(String hostAdd, String password, String username, ClientArgs args) {
+	public boolean openConnection(String hostAdd, String password, String username, ClientArgs args, String path) {
 		boolean success = false;
 		try {
-			String path = System.getProperty("user.dir");
 			java.util.Properties config = new java.util.Properties(); 
 	    	config.put("StrictHostKeyChecking", "no");
 			JSch jsch = new JSch();
-			jsch.setConfig(config);
+			JSch.setConfig(config);
 			session=jsch.getSession(username, hostAdd, 22);
 	    	session.setPassword(password);
 	    	session.setConfig(config);

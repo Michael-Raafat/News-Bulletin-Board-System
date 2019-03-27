@@ -35,9 +35,10 @@ public class SharedServerObject {
 	}
 	
 	public ReadRecord readValue(int id, int rSeq) {
-		int rNum = nRead.incrementAndGet();
+		nRead.incrementAndGet();
 		valLock.readLock().lock();
 		Random rand = new Random();
+		int rNum = nRead.get();
 		try {
 			Thread.sleep(rand.nextInt(MAX_SLEEP_TIME));
 		} catch (InterruptedException e) {

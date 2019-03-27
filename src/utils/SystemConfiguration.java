@@ -19,6 +19,7 @@ public class SystemConfiguration {
 	private int[] readersIDs, writersIDs;
 	private int rmiPort;
 	private boolean rmi;
+	private String path;
 	
 	boolean error;
 	
@@ -131,6 +132,11 @@ public class SystemConfiguration {
 	    	  System.out.println("Error! missing number of accesses!");
 	    	  return;
 	      }
+	      if (properties.containsKey("path")) {
+	    	  path = properties.get("path");
+	      } else {
+	    	  path = System.getProperty("user.dir");
+	      }
 	      readersUsername = new String[numberOfReaders];
 	      readersIDs = new int [numberOfReaders];
 		  readersAdd = new String [numberOfReaders];
@@ -214,6 +220,7 @@ public class SystemConfiguration {
 	    			 + writersIDs[i] + "\n\t\t\tPassword : " + writersPass[i]);
 	      }
 	      System.out.println("\tNumber of Accesses : " + numberOfAccess);
+	      System.out.println("\tPath for client executables : " + path);
 	    } catch (Exception e) { 
 	    	e.printStackTrace();
 	      error = true;
@@ -230,5 +237,9 @@ public class SystemConfiguration {
 
 	public boolean isRmi() {
 		return rmi;
+	}
+	
+	public String getPath() {
+		return path;
 	}
 }
